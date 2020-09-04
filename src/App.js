@@ -6,14 +6,19 @@ import{
   CardContent,
   Card,
 }from "@material-ui/core"; 
-import InfoBox from './infoBox'
-import Map from './Map'
+import InfoBox from './infoBox';
+import Map from './Map';
+import Table from './Table';
+import './Table.css';
+import { sortData } from './util';
+import LineGraph from './LineGraph';
 import './App.css';
 
 function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
+  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -32,7 +37,8 @@ function App() {
           name: country.country,
           value: country.countryInfo.iso2,
         }));
-
+        const sortedData = sortData(data);
+        setTableData(sortedData);
         setCountries(countries);
       });
     };
@@ -67,9 +73,21 @@ function App() {
         </div>  
 
         <div className = "app_stats">
-          <InfoBox title = "Coronavirus Cases" cases = {countryInfo.todayCases} total = {countryInfo.cases}/>
-          <InfoBox title = "Recovered" cases = {countryInfo.todayRecovered} total = {countryInfo.recovered}/>
-          <InfoBox title = "Deaths" cases = {countryInfo.todayDeaths} total = {countryInfo.deaths}/>
+          <InfoBox
+            title = "Coronavirus Cases"
+            cases = {countryInfo.todayCases}
+            total = {countryInfo.cases}
+          />
+          <InfoBox 
+            title = "Recovered"
+            cases = {countryInfo.todayRecovered}
+            total = {countryInfo.recovered}
+          />
+          <InfoBox 
+           title = "Deaths" 
+           cases = {countryInfo.todayDeaths} 
+           total = {countryInfo.deaths}
+          />
         </div> 
         
         <Map />
@@ -79,9 +97,10 @@ function App() {
       <Card className = "app_right">
         <CardContent>
           <h3>Live Cases by Country</h3>
+          <Table countries = {tableData} />
 
           <h3>Worldwide New Cases</h3>
-
+          <LineGraph/>
         </CardContent>
       </Card> 
     </div>
